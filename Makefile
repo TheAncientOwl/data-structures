@@ -1,24 +1,28 @@
-CXXFLAGS+=-g -Wall -std=c++17
+CXX 		 := g++
+CXXFLAGS := -g -Wall -std=c++17 -ggdb
 
-init: clean color timer
+PROJ_PATH = /home/theancientowl/data-structures
+
+BIN			:= $(PROJ_PATH)/bin
+SRC 		:= $(PROJ_PATH)/src
+INCLUDE := $(PROJ_PATH)/include
+
+LIBRARIES  :=
+EXECUTABLE := main
+
+SOURCE_FILES = $(shell find $(SRC) -type f -name *.src.cpp)
+
+all: build run
+
+build: clean $(BIN)/$(EXECUTABLE)
+
+run:
+	@$(BIN)/$(EXECUTABLE)
+
+$(BIN)/$(EXECUTABLE): $(SOURCE_FILES)
+	@echo '[INFO] Build started.'
+	@$(CXX) $(CXXFLAGS) -I $(INCLUDE) $^ -o $@ $(LIBRARIES)
+	@echo '[INFO] Build finished.'
 
 clean:
-	@rm -rf out
-	@rm -f executable.elf64
-	@mkdir out
-
-dummy: init
-	g++ -Wall -std=c++17 -c ./Dummy/Dummy.cpp -o ./out/Dummy.o
-	g++ -Wall -std=c++17 -c ./Dummy/test.cpp -o ./out/test.o
-	@make executable
-
-executable:
-	@g++ -o executable.elf64 ./out/*.o
-	@./executable.elf64
-
-color:
-	@g++ -Wall -std=c++17 -c ./ccolor/ccolor.cpp -o ./out/ccolor.o
-
-timer:
-	@g++ -Wall -std=c++17 -c ./Timer/Timer.cpp -o ./out/Timer.o
-
+	@rm -rf $(BIN)/*

@@ -26,17 +26,16 @@ void Dummy::setTag(const char* tag) {
   }
 }
 
-Dummy::Dummy(): m_Name("Unknown"), m_Tag(nullptr), m_Age(-1) {
+Dummy::Dummy(): m_Name(""), m_Tag(nullptr), m_Age(0) {
 #ifdef DUMMY_LOG
   std::cout << log_format << ccolor::light_green << "Default Constructor.\n";
 #endif
 }
 
-Dummy::Dummy(std::string_view name, const char* tag, uint8_t age): m_Name(name), m_Age(age) {
+Dummy::Dummy(std::string name, const char* tag, uint16_t age): m_Name(std::move(name)), m_Age(age) {
 #ifdef DUMMY_LOG
   std::cout << log_format << ccolor::light_green << "Param Constructor.\n";
 #endif
-
   this->setTag(tag);
 }
 
@@ -48,7 +47,8 @@ Dummy::Dummy(const Dummy& other): m_Name(other.m_Name), m_Age(other.m_Age) {
   this->setTag(other.m_Tag);
 }
 
-Dummy::Dummy(Dummy&& other) noexcept: m_Name(std::move(other.m_Name)), m_Age(std::move(other.m_Age)) {
+Dummy::Dummy(Dummy&& other) noexcept
+  : m_Name(std::move(other.m_Name)), m_Age(std::move(other.m_Age)) {
 #ifdef DUMMY_LOG
   std::cout << log_format << ccolor::light_green << "Move Constructor.\n";
 #endif
@@ -88,6 +88,12 @@ Dummy::~Dummy() {
 #ifdef DUMMY_LOG
   std::cout << log_format << ccolor::light_green << "Desctructor.\n";
 #endif
-  if (m_Tag != nullptr)
+  if (m_Tag != 0)
     delete[] m_Tag;
+}
+
+std::ostream& operator<<(std::ostream& out, const Dummy& dummy) {
+  std::cout << log_format << ccolor::gold << "name(" << dummy.m_Name << ") tag(" << (dummy.m_Tag ? dummy.m_Tag : "nullptr") << ") age(" << dummy.m_Age << ")";
+
+  return out;
 }

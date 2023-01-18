@@ -1,8 +1,7 @@
 #pragma once
 
+#include <iostream>
 #include <string>
-
-#include <string_view>
 
 class Dummy {
 private:
@@ -10,15 +9,17 @@ private:
 
 public:
   Dummy();
-  Dummy(std::string_view name, const char* tag, uint8_t age);
+  Dummy(std::string name, const char* tag, uint16_t age);
   Dummy(const Dummy& other);
   Dummy(Dummy&& other) noexcept;
   Dummy& operator=(const Dummy& other);
   Dummy& operator=(Dummy&& other) noexcept;
   ~Dummy();
 
+  friend std::ostream& operator<<(std::ostream& out, const Dummy& dummy);
+
 private:
   std::string m_Name;
   char* m_Tag = nullptr;
-  uint8_t m_Age;
+  uint16_t m_Age;
 };
