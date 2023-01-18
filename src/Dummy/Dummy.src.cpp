@@ -1,6 +1,6 @@
 #include "Dummy.hpp"
 
-#define DUMMY_LOG
+// #define DUMMY_LOG
 
 #include <cstring>
 
@@ -93,7 +93,9 @@ Dummy::~Dummy() {
 }
 
 std::ostream& operator<<(std::ostream& out, const Dummy& dummy) {
+#ifdef DUMMY_LOG
   std::cout << log_format << ccolor::gold << "name(" << dummy.m_Name << ") tag(" << (dummy.m_Tag ? dummy.m_Tag : "nullptr") << ") age(" << dummy.m_Age << ")";
+#endif
 
   return out;
 }

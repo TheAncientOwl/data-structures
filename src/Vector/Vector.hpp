@@ -20,8 +20,8 @@ public:
   void reserve(std::size_t capacity);
   void resize(std::size_t newCapacity);
 
-  void push_back(const T& value);
-  void push_back(T&& value);
+  void pushBack(const T& value);
+  void pushBack(T&& value);
 
   template<typename... Args>
   T& emplaceBack(Args&&... args);
@@ -57,7 +57,7 @@ private:
 
 template<typename T>
 inline Vector<T>::Vector()
-  : m_Data(this->allocateData(10)), m_Capacity(10), m_Size(0) {}
+  : m_Data(this->allocateData(0)), m_Capacity(0), m_Size(0) {}
 
 template<typename T>
 inline Vector<T>::Vector(std::size_t capacity)
@@ -141,7 +141,7 @@ inline void Vector<T>::rawResize() {
 
 template<typename T>
 inline std::size_t Vector<T>::calculateExtendedCapacity() {
-  return m_Capacity == 0 ? 10 : (m_Capacity + m_Capacity / 2);
+  return m_Capacity == 0 ? 10 : (m_Capacity * 2);
 }
 
 template<typename T>
@@ -173,7 +173,7 @@ inline void Vector<T>::resize(std::size_t newCapacity) {
 }
 
 template<typename T>
-inline void Vector<T>::push_back(const T& value) {
+inline void Vector<T>::pushBack(const T& value) {
   if (m_Size == m_Capacity)
     this->reserve(this->calculateExtendedCapacity());
 
@@ -181,7 +181,7 @@ inline void Vector<T>::push_back(const T& value) {
 }
 
 template<typename T>
-inline void Vector<T>::push_back(T&& value) {
+inline void Vector<T>::pushBack(T&& value) {
   if (m_Size == m_Capacity)
     this->reserve(this->calculateExtendedCapacity());
 
