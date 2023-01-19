@@ -27,8 +27,8 @@ public:
 
   void popBack();
 
-  T& operator[](int index);
-  const T& operator[](int index) const;
+  T& operator[](std::size_t index);
+  const T& operator[](std::size_t index) const;
 
   T& front();
   const T& front() const;
@@ -233,7 +233,7 @@ inline void Vector<T>::popBack() {
 }
 
 template<typename T>
-inline T& Vector<T>::operator[](int index) {
+inline T& Vector<T>::operator[](std::size_t index) {
   if (index < 0 || index > m_Size)
     throw std::out_of_range("index out of bounds");
 
@@ -241,7 +241,7 @@ inline T& Vector<T>::operator[](int index) {
 }
 
 template<typename T>
-inline const T& Vector<T>::operator[](int index) const {
+inline const T& Vector<T>::operator[](std::size_t index) const {
   if (index < 0 || index > m_Size)
     throw std::out_of_range("index out of bounds");
 
