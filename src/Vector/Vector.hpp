@@ -28,8 +28,8 @@ public:
 
   void popBack();
 
-  T& operator[](std::size_t index);
-  const T& operator[](std::size_t index) const;
+  T& operator[](int index);
+  const T& operator[](int index) const;
 
   T& front();
   const T& front() const;
@@ -47,7 +47,8 @@ private:
   T* allocateData(std::size_t capacity);
   void deallocateData();
   void rawResize();
-  std::size_t calculateExtendedCapacity();
+  void throwIfEmpty();
+  void expandIfNecessary();
 
 private:
   T* m_Data = nullptr;
@@ -134,8 +135,15 @@ inline void Vector<T>::rawResize() {
 }
 
 template<typename T>
-inline std::size_t Vector<T>::calculateExtendedCapacity() {
-  return m_Capacity == 0 ? 10 : (m_Capacity * 2);
+inline void Vector<T>::throwIfEmpty() {
+  if (m_Size == 0)
+    throw std::runtime_error("the vectory is empty");
+}
+
+template<typename T>
+inline void Vector<T>::expandIfNecessary() {
+  if (m_Size == m_Capacity)
+    this->reserve(m_Capacity == 0 ? 10 : (m_Capacity * 2));
 }
 
 template<typename T>
@@ -168,16 +176,14 @@ inline void Vector<T>::resize(std::size_t newCapacity) {
 
 template<typename T>
 inline void Vector<T>::pushBack(const T& value) {
-  if (m_Size == m_Capacity)
-    this->reserve(this->calculateExtendedCapacity());
+  this->expandIfNecessary();
 
   new(&m_Data[m_Size++]) T(value);
 }
 
 template<typename T>
 inline void Vector<T>::pushBack(T&& value) {
-  if (m_Size == m_Capacity)
-    this->reserve(this->calculateExtendedCapacity());
+  this->expandIfNecessary();
 
   new(&m_Data[m_Size++]) T(std::forward<T>(value));
 }
@@ -221,15 +227,14 @@ inline void Vector<T>::deallocateData() {
 
 template<typename T>
 inline void Vector<T>::popBack() {
-  if (m_Size == 0)
-    throw std::runtime_error("vector is empty, cannot pop back");
+  this->throwIfEmpty();
 
-  T last = std::move(m_Data[m_Size - 1]);
+  m_Data[m_Size - 1].~T();
   m_Size--;
 }
 
 template<typename T>
-inline T& Vector<T>::operator[](std::size_t index) {
+inline T& Vector<T>::operator[](int index) {
   if (index < 0 || index > m_Size)
     throw std::out_of_range("index out of bounds");
 
@@ -237,7 +242,7 @@ inline T& Vector<T>::operator[](std::size_t index) {
 }
 
 template<typename T>
-inline const T& Vector<T>::operator[](std::size_t index) const {
+inline const T& Vector<T>::operator[](int index) const {
   if (index < 0 || index > m_Size)
     throw std::out_of_range("index out of bounds");
 
@@ -246,32 +251,28 @@ inline const T& Vector<T>::operator[](std::size_t index) const {
 
 template<typename T>
 inline T& Vector<T>::front() {
-  if (m_Size == 0)
-    throw std::runtime_error("the vector is empty");
+  this->throwIfEmpty();
 
   return m_Data[0];
 }
 
 template<typename T>
 inline const T& Vector<T>::front() const {
-  if (m_Size == 0)
-    throw std::runtime_error("the vector is empty");
+  this->throwIfEmpty();
 
   return m_Data[0];
 }
 
 template<typename T>
 inline T& Vector<T>::back() {
-  if (m_Size == 0)
-    throw std::runtime_error("the vector is empty");
+  this->throwIfEmpty();
 
   return m_Data[m_Size - 1];
 }
 
 template<typename T>
 inline const T& Vector<T>::back() const {
-  if (m_Size == 0)
-    throw std::runtime_error("the vector is empty");
+  this->throwIfEmpty();
 
   return m_Data[m_Size - 1];
 }
@@ -279,8 +280,7 @@ inline const T& Vector<T>::back() const {
 template<typename T>
 template<typename ...Args>
 inline T& Vector<T>::emplaceBack(Args && ...args) {
-  if (m_Size == m_Capacity)
-    this->reserve(this->calculateExtendedCapacity());
+  this->expandIfNecessary();
 
   new(&m_Data[m_Size])T(std::forward<Args>(args)...);
 
