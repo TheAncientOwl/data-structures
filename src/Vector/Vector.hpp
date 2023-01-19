@@ -92,14 +92,8 @@ inline Vector<T>& Vector<T>::operator=(const Vector<T>& rhs) {
   m_Size = rhs.m_Size;
   m_Capacity = rhs.m_Capacity;
 
-  if (m_Data == nullptr)
-    m_Data = this->allocateData(m_Capacity);
-  else {
-    if (m_Size != rhs.m_Size && m_Capacity != rhs.m_Capacity) {
-      this->deallocateData();
-      m_Data = this->allocateData(m_Capacity);
-    }
-  }
+  this->deallocateData();
+  this->allocateData(m_Capacity);
 
   for (std::size_t i = 0; i < m_Size;i++)
     m_Data[i] = rhs.m_Data[i];
